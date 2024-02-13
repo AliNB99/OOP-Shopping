@@ -1,7 +1,7 @@
-const getData = async () => {
-  const response = await fetch("data.json");
-  const json = await response.json();
+const fetchData = async () => {
+  const res = await fetch("data.json");
+  const json = await res.json();
   return json;
 };
 
-export { getData };
+export { fetchData };

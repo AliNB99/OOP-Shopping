@@ -1,8 +1,8 @@
 import Display from "./Display.js";
 
 class Products extends Display {
-  constructor(products, parent, cart) {
-    super(products, parent);
+  constructor(parent, products, cart) {
+    super(parent, products);
     this.cart = cart;
   }
 
@@ -10,30 +10,39 @@ class Products extends Display {
     this.products.forEach((product) => this.createCart(product));
   }
 
-  cartInfo(data) {
-    const { id, name, price } = data;
+  cartInfo(product) {
+    const { id, name, price } = product;
     const infoJSX = `
-    <div id="product-info">
+      <div id="product-info">
         <h3>${name}</h3>
         <div>
-            <span>$ ${price}</span>
-            <button data-id=${id}>+</button>
+          <span>$ ${price}</span>
+          <button data-id=${id}>+</button>
         </div>
-    </div>`;
-
+      </div>
+    `;
     return infoJSX;
   }
 
-  handleEvent(e) {
-    if (e.target.tagName !== "BUTTON") return;
+  addToCart(id) {
+    const product = this.products.find((i) => i.id === +id);
+    const productSelectedIndex = this.cart.selectedProduct.findIndex(
+      (p) => p.id === product.id
+    );
 
-    const { id } = e.target.dataset;
-    this.addToCart(id);
+    if (productSelectedIndex > -1) {
+      this.cart.selectedProduct[productSelectedIndex].quantity++;
+    } else {
+      this.cart.selectedProduct.push({ ...product, quantity: 1 });
+    }
+
+    console.log(this.cart.selectedProduct);
   }
 
-  addToCart(id) {
-    const product = this.products.find((p) => p.id === +id);
-    this.cart.selectedProducts.push(product);
+  handleEvent(event) {
+    if (event.target.tagName !== "BUTTON") return;
+    const { id } = event.target.dataset;
+    this.addToCart(id);
     this.cart.showCart();
   }
 }

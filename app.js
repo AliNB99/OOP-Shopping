@@ -1,25 +1,32 @@
-// Api
-import { getData } from "./utils/httpReq.js";
-
-// Class
-import Products from "./models/Products.js";
 import Cart from "./models/Cart.js";
+import Products from "./models/Products.js";
+import { fetchData } from "./utils/httpReq.js";
 
-// Elements
 const productsNode = document.getElementById("products");
-const CartNode = document.getElementById("cart");
-const totalPriceNode = document.getElementById("total-price");
+const cartNode = document.getElementById("cart-list");
+const totalPriceNode = document
+  .getElementById("total-price")
+  .querySelector("span");
+const errorText = document.getElementById("error");
 
 const render = async () => {
-  const ProductsData = await getData();
+  try {
+    const productsData = await fetchData();
 
-  const cartInstance = new Cart(CartNode, totalPriceNode);
-  const productsInstance = new Products(
-    productsNode,
-    ProductsData,
-    cartInstance
-  );
-  productsInstance.showProducts();
+    if (!productsData) return (loader.style.display = "block");
+
+    const cartInstance = new Cart(cartNode, totalPriceNode);
+    const productsInstance = new Products(
+      productsNode,
+      productsData,
+      cartInstance
+    );
+    productsInstance.showProducts();
+    cartInstance.showCart();
+  } catch (error) {
+    errorText.style.display = "block";
+    errorText.innerText = error.message;
+  }
 };
 
-document.addEventListener("DOMContentLoaded", render);
+window.addEventListener("DOMContentLoaded", render);
